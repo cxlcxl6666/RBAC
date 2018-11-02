@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.atguigu.atcrowdfunding.dao.UserDao">
+
+<!-- void deleteUserRoles(Map<String, Object> map); -->
+<delete id="deleteUserRoles">
+	delete from t_user_role
+	where userid =#{userid} and roleid in
+<foreach collection="unassginRoleids" item="roleid" open="(" close=")" separator=",">
+	#{roleid}
+</foreach>
+
+</delete>
+
+<!-- void insertUserRoles(Map<String, Object> map); -->
+<insert id="insertUserRoles">
+	insert into t_user_role(userid,roleid) values
+	<foreach collection="assginRoleids" item="roleid" separator=",">
+		(#{userid},#{roleid})
+	</foreach>
+</insert>
+
+ <!-- void deleteUsers(Map<String, Object> map); -->
+ <delete id="deleteUsers">
+ 	delete from t_user where id in
+ 	<foreach collection="userIds" item="userid" open="(" close=")" separator=",">
+ 		#{userid}
+ 	</foreach>
+ </delete>
+
+ <!-- void updateUser(User user); -->
+ <update id="updateUser">
+ 	update t_user 
+ 	set loginacct=#{loginacct},username=#{username},email=#{email}
+ 	where id = #{id}
+ </update>
+
+ <!-- void insertUser(User user); -->
+ <insert id="insertUser">
+ 	insert into t_user(loginacct,username,userpswd,email,createtime) 
+ 	values(#{loginacct},#{username},#{userpswd},#{email},#{createtime})
+ </insert>
+ 
+
+ <!--List<User> queryPageData(Map<String, Integer> map);  -->
+ <select id="queryPageData" resultType="com.atguigu.atcrowdfunding.bean.User">
+ 	select * from t_user 
+ 		<where>
+ 			<if test="queryText != null">
+ 				and loginacct like concat('%',#{queryText},'%')
+ 			</if>
+ 		</where>
+ 	order by createtime desc
+ 	limit #{start},#{size} 
+ </select>
+ 
+ <!-- List<User> queryPageAll(Map<String, Integer> map); -->
+ <select id="queryPageAll" resultType="int">
+ 	select * from t_user
+ 	<where>
+ 			<if test="queryText != null">
+ 				and loginacct like concat('%',#{queryText},'%')
+ 			</if>
+ 		</where>
+ </select>
+</mapper>

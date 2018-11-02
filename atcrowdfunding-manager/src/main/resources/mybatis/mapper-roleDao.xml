@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.atguigu.atcrowdfunding.dao.RoleDao">
+
+<!-- void insertPermissions(Map<String, Object> map); -->
+<insert id="insertPermissions">
+	insert into t_role_permission(roleid,permissionid)
+	values
+	<foreach collection="permissionids" item="permissionid" separator=",">
+		(#{roleid},#{permissionid})
+	</foreach>
+</insert>
+
+
+<!-- List<Role> queryAssignRoles(Integer id); -->
+<select id="queryAssignRoles" resultType="com.atguigu.atcrowdfunding.bean.Role">
+	select * from t_role
+	where id in (
+			select roleid from t_user_role where userid = #{id}
+	)
+</select>
+
+
+ <!--List<Role> queryPageDat(Map<String, Object> map); -->
+ <select id="queryPageDat" resultType="com.atguigu.atcrowdfunding.bean.Role">
+ 	select * from t_role
+ 	<if test="queryText != null">
+ 		where name like concat('%',#{queryText},'%')
+ 	</if>
+ 	limit #{start},#{size}
+ </select>
+ 
+ <!-- List<Role> queryPageAll(Map<String, Integer> map); -->
+ <select id="queryPageAll" resultType="com.atguigu.atcrowdfunding.bean.Role">
+ 	select * from t_role
+ 	<if test="queryText != null">
+ 		where name like concat('%',#{queryText},'%')
+ 	</if>
+ </select>
+</mapper>
